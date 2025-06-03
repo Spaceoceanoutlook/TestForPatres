@@ -1,8 +1,7 @@
 from sqlalchemy import Integer, ForeignKey, DateTime
-from sqlalchemy.orm import declarative_base, Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from .base import Base
 from datetime import datetime, UTC
-
-Base = declarative_base()
 
 
 class BorrowedBook(Base):
