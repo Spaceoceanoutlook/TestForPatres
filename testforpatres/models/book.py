@@ -1,6 +1,6 @@
 from sqlalchemy import Integer, String, CheckConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from .base import Base
+from . import Base
 
 
 class Book(Base):
