@@ -1,78 +1,89 @@
 import psycopg2
 from psycopg2 import sql
-import psycopg2.errors
 
-def create_db_and_user():
-    admin_conn_params = {
-        "dbname": "postgres",
-        "user": "postgres",
-        "password": "postgres",
-        "host": "localhost",
-        "port": 5432,
-    }
+# Параметры подключения
+ADMIN_CONN_PARAMS = {
+    "dbname": "postgres",
+    "user": "postgres",
+    "password": "postgres",
+    "host": "localhost",
+    "port": 5432,
+}
 
-    new_db = "library_db"
-    new_user = "library_user"
-    new_password = "library_pass123"
+# Новая БД и пользователь
+NEW_DB = "library_db"
+NEW_USER = "library_user"
+NEW_PASSWORD = "library_pass123"
 
-    try:
-        admin_conn = psycopg2.connect(**admin_conn_params)
-        admin_conn.autocommit = True
-        admin_cur = admin_conn.cursor()
 
+def create_database(conn, db_name):
+    with conn.cursor() as cur:
         try:
-            admin_cur.execute(
-                sql.SQL("CREATE DATABASE {}").format(
-                    sql.Identifier(new_db)
+            cur.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(db_name)))
+            print(f"База данных '{db_name}' создана.")
+        except psycopg2.Error as e:
+            if e.pgcode == "42P04":
+                print(f"База данных '{db_name}' уже существует.")
+            else:
+                raise
+
+
+def create_user_and_grant_privileges(admin_params, db_name, user, password):
+    # Подключение к системной БД для создания пользователя
+    with psycopg2.connect(**admin_params) as conn:
+        conn.autocommit = True
+        with conn.cursor() as cur:
+            try:
+                cur.execute(
+                    sql.SQL("CREATE USER {} WITH PASSWORD %s").format(sql.Identifier(user)),
+                    [password],
+                )
+                print(f"Пользователь '{user}' создан.")
+            except psycopg2.Error as e:
+                if e.pgcode == "42710":
+                    print(f"Пользователь '{user}' уже существует.")
+                else:
+                    raise
+
+            cur.execute(
+                sql.SQL("GRANT CONNECT ON DATABASE {} TO {}").format(
+                    sql.Identifier(db_name),
+                    sql.Identifier(user)
                 )
             )
-            print(f"База '{new_db}' создана")
-        except psycopg2.errors.DuplicateDatabase:
-            print(f"База '{new_db}' уже существует")
+            print(f"Права на подключение к БД '{db_name}' выданы пользователю '{user}'.")
+
+    # Подключение к целевой БД для прав на схему
+    db_params = admin_params.copy()
+    db_params["dbname"] = db_name
+
+    with psycopg2.connect(**db_params) as conn:
+        conn.autocommit = True
+        with conn.cursor() as cur:
+            cur.execute(
+                sql.SQL("GRANT ALL PRIVILEGES ON SCHEMA public TO {}").format(
+                    sql.Identifier(user)
+                )
+            )
+            print(f"Права на схему 'public' выданы пользователю '{user}'.")
+
+
+def create_db_and_user():
+    try:
+        admin_conn = psycopg2.connect(**ADMIN_CONN_PARAMS)
+        admin_conn.autocommit = True
+        try:
+            create_database(admin_conn, NEW_DB)
         finally:
-            admin_cur.close()
             admin_conn.close()
 
-        # Подключаемся к новой БД
-        new_db_conn_params = {
-            "dbname": new_db,
-            "user": "postgres",
-            "password": "postgres",
-            "host": "localhost",
-            "port": 5432,
-        }
-
-        with psycopg2.connect(**new_db_conn_params) as conn:
-            conn.autocommit = True
-            with conn.cursor() as cur:
-                try:
-                    cur.execute(
-                        sql.SQL("CREATE USER {} WITH PASSWORD %s").format(
-                            sql.Identifier(new_user)
-                        ),
-                        [new_password]
-                    )
-                    print(f"Пользователь '{new_user}' создан")
-                except psycopg2.errors.DuplicateObject:
-                    print(f"Пользователь '{new_user}' уже существует")
-
-                # Права на БД
-                grant_query = sql.SQL("GRANT ALL PRIVILEGES ON DATABASE {} TO {}").format(
-                    sql.Identifier(new_db),
-                    sql.Identifier(new_user))
-                cur.execute(grant_query)
-                print(f"Права на '{new_db}' выданы '{new_user}'")
-
-                # Права на схему public
-                grant_schema_query = sql.SQL("GRANT ALL PRIVILEGES ON SCHEMA public TO {}").format(
-                    sql.Identifier(new_user))
-                cur.execute(grant_schema_query)
-                print(f"Права на схему 'public' выданы '{new_user}'")
+        create_user_and_grant_privileges(ADMIN_CONN_PARAMS, NEW_DB, NEW_USER, NEW_PASSWORD)
 
     except psycopg2.OperationalError as e:
-        print(f"Ошибка подключения: {e}")
+        print(f"[ОШИБКА ПОДКЛЮЧЕНИЯ] {e}")
     except Exception as e:
-        print(f"Неожиданная ошибка: {e}")
+        print(f"[НЕОЖИДАННАЯ ОШИБКА] {e}")
+
 
 if __name__ == "__main__":
     create_db_and_user()
