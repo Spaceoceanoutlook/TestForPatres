@@ -15,5 +15,6 @@ class Book(Base):
     publication_year: Mapped[int | None] = mapped_column(Integer, nullable=True)
     isbn: Mapped[str | None] = mapped_column(String, unique=True, nullable=True)
     copies_available: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    description: Mapped[str] = mapped_column(String, nullable=True)
 
     borrowings = relationship("BorrowedBook", back_populates="book")
