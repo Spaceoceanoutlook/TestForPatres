@@ -1,9 +1,14 @@
-Создание базы данных в Postgres.
+## Настройка проекта
 
-Если Postgres установлен локально, то запустить скрипт create_db.py.
+### 1. Создание и активация виртуального окружения
 
-Если Postgres не установлен, но установлен Docker, то ввести в терминале
+`poetry install`
 
-docker run --name my_postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres
+`poetry shell`
 
-и после запустить скрипт create_db.py.
+### 2. Создание БД
+
+#### Если Postgres установлен локально, то запустить скрипт `create_db.py`
+#### Если Postgres не установлен, но установлен Docker, то ввести в терминале
+`docker run --name my_postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres`
+и далее запустить скрипт `create_db.py`
