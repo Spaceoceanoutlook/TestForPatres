@@ -1,8 +1,10 @@
 from fastapi import FastAPI
-from endpoints import auth as endpoints_auth  # Импорт роутера
+from routers import auth
+import uvicorn
 
 app = FastAPI()
 
-# Подключаем роутер
-# app.include_router(endpoints_auth.router)
+app.include_router(auth.router)
 
+if __name__ == "__main__":
+    uvicorn.run("main:app", reload=True)
