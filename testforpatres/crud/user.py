@@ -2,9 +2,10 @@ from sqlalchemy.orm import Session
 from testforpatres.models.user import User
 from testforpatres.schemas.user import UserCreate
 from testforpatres.core.security import get_password_hash
+from pydantic import EmailStr
 
 
-def get_user_by_email(db: Session, email: str):
+def get_user_by_email(db: Session, email: EmailStr):
     return db.query(User).filter(User.email == email).first()
 
 
