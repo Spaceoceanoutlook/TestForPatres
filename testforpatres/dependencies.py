@@ -1,5 +1,5 @@
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 from database import get_db
@@ -7,22 +7,19 @@ from models.user import User
 from schemas.user import TokenData
 from core.security import SECRET_KEY, ALGORITHM
 
+security = HTTPBearer()
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
-
-
-def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
-    print("Received token:", token)
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db),
+):
+    token = credentials.credentials  # тут уже без "Bearer "
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
     )
 
     try:
-        # Если токен пришёл с префиксом "Bearer ", убираем его
-        if token.startswith("Bearer "):
-            token = token[len("Bearer "):]
-
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
         if not email:
@@ -35,4 +32,3 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
     if user is None:
         raise credentials_exception
     return user
-
