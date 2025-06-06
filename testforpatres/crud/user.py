@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from testforpatres.models.user import User
 from testforpatres.schemas.user import UserCreate
-from testforpatres.core.security import get_password_hash
+from testforpatres.security import get_password_hash
 from pydantic import EmailStr
 
 

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from testforpatres.schemas.user import UserCreate, UserLogin, Token, UserResponse
 from testforpatres.crud.user import get_user_by_email, create_user
-from testforpatres.core.security import verify_password, create_access_token
+from testforpatres.security import verify_password, create_access_token
 from testforpatres.database import get_db
 from datetime import timedelta
 

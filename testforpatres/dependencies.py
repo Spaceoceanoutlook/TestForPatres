@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from testforpatres.database import get_db
 from testforpatres.models.user import User
 from testforpatres.schemas.user import TokenData
-from testforpatres.core.security import SECRET_KEY, ALGORITHM
+from testforpatres.security import SECRET_KEY, ALGORITHM
 
 security = HTTPBearer()
 

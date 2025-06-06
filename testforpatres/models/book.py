@@ -17,4 +17,4 @@ class Book(Base):
     copies_available: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
     description: Mapped[str] = mapped_column(String, nullable=True)
 
-    borrowings = relationship("BorrowedBook", back_populates="book")
+    borrowings = relationship("BorrowedBook", back_populates="book", cascade="all, delete-orphan")
