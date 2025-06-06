@@ -3,7 +3,7 @@ from testforpatres.models.reader import Reader as ReaderModel
 from testforpatres.schemas.readers import ReaderCreate
 
 def create_reader(db: Session, reader: ReaderCreate) -> ReaderModel:
-    db_reader = ReaderModel(**reader.dict())
+    db_reader = ReaderModel(**reader.model_dump())
     db.add(db_reader)
     db.commit()
     db.refresh(db_reader)
@@ -19,7 +19,7 @@ def update_reader(db: Session, reader_id: int, reader: ReaderCreate):
     db_reader = get_reader(db, reader_id)
     if not db_reader:
         return None
-    for key, value in reader.dict().items():
+    for key, value in reader.model_dump().items():
         setattr(db_reader, key, value)
     db.commit()
     db.refresh(db_reader)
