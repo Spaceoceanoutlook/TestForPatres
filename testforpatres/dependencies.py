@@ -2,10 +2,10 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
-from database import get_db
-from models.user import User
-from schemas.user import TokenData
-from core.security import SECRET_KEY, ALGORITHM
+from testforpatres.database import get_db
+from testforpatres.models.user import User
+from testforpatres.schemas.user import TokenData
+from testforpatres.core.security import SECRET_KEY, ALGORITHM
 
 security = HTTPBearer()
 
@@ -13,7 +13,7 @@ def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(security),
     db: Session = Depends(get_db),
 ):
-    token = credentials.credentials  # тут уже без "Bearer "
+    token = credentials.credentials
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
