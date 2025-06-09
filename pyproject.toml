@@ -18,5 +18,9 @@ pydantic = {extras = ["email"], version = "^2.11.5"}
 bcrypt = "<4.1.0"
 
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.4.0"
+httpx = "^0.28.1"
+
 [build-system]
 build-backend = "poetry.core.masonry.api"
