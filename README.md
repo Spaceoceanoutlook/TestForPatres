@@ -11,18 +11,22 @@ poetry env activate
 ##### Если после этой команды вернулась "source /путь/", значит виртуальное окружение не активировалось
 ##### (зависит от версии poetry). Нужно скопировать этот путь и нажать Enter.
 ##### Создаем БД Postgres
+##### cd testforpatres/
 ##### Для запуска локального Postgres:
-create_db.py
+python create_db.py
 ##### Для запуска Postgres в Docker:
 docker run --name my_postgres -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres
 
-create_db.py
+python create_db.py
 ##### Применяем миграции 
+cd .. 
+
 alembic upgrade head
+
 ##### Переходим в папку проекта 
 cd testforpatres/
 ##### Запускаем 
-python3 main.py (для Linux)
+python main.py
 
 По адресу http://localhost:8000/docs зарегистрируемся в /auth/register, 
 аутентифицируемся в /auth/login, получаем в ответе JWT-токен. 
