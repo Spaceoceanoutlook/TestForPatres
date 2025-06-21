@@ -1,11 +1,15 @@
 ### Настройка проекта
 
-##### Клонируем репозиторий https://github.com/Spaceoceanoutlook/TestForPatres.git
 ##### Устанавливаем poetry (см. документацию https://python-poetry.org/docs/#installing-with-the-official-installer)
+##### git clone https://github.com/Spaceoceanoutlook/TestForPatres.git
+cd TestForPatres/
 ##### Создаем и активируем виртуального окружения
 poetry install
 
 poetry env activate
+
+##### Если после этой команды вернулась "source /путь/", значит виртуальное окружение не активировалось
+##### (зависит от версии poetry). Нужно скопировать этот путь и нажать Enter.
 ##### Создаем БД Postgres
 ##### Для запуска локального Postgres:
 create_db.py
